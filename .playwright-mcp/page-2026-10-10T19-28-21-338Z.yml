@@ -1,0 +1,18 @@
+- generic [ref=f1e2]:
+  - generic [ref=f1e54]:
+    - button "Ativar tema escuro" [pressed] [ref=f1e56] [cursor=pointer]
+    - generic [ref=f1e59]:
+      - generic [ref=f1e60]:
+        - heading "Cofre bloqueado" [level=1] [ref=f1e65]
+        - paragraph [ref=f1e66]: teste2@exemplo.com
+      - generic [ref=f1e67]:
+        - generic [ref=f1e68]:
+          - generic [ref=f1e69]: Senha mestra
+          - generic [ref=f1e70]:
+            - textbox "Senha mestra" [active] [ref=f1e71]:
+              - /placeholder: ••••••••••
+            - button "Mostrar senha" [ref=f1e73] [cursor=pointer]
+        - button "Desbloquear" [ref=f1e77] [cursor=pointer]
+        - paragraph [ref=f1e78]: Bloqueio automático após 5 min de inatividade.
+      - button "Sair da conta" [ref=f1e79] [cursor=pointer]
+  - status

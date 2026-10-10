@@ -1,0 +1,41 @@
+- generic [ref=f2e2]:
+  - generic [ref=f2e32]:
+    - complementary [ref=f2e33]:
+      - generic [ref=f2e40]:
+        - paragraph [ref=f2e41]: Lock
+        - paragraph [ref=f2e42]: Zeró-knowledge
+      - generic [ref=f2e44]:
+        - generic [ref=f2e45]:
+          - generic [ref=f2e46]: Grupos
+          - button "Novo grupo" [ref=f2e48] [cursor=pointer]
+        - navigation "Navegação de grupos" [ref=f2e51]:
+          - button "Todos os itens 0" [ref=f2e285] [cursor=pointer]:
+            - generic [ref=f2e56]: Todos os itens
+            - generic [ref=f2e57]: "0"
+      - generic [ref=f2e64]:
+        - generic [ref=f2e65]: Sincronizado
+        - generic [ref=f2e68]:
+          - generic [ref=f2e69]: teste2@exemplo.com
+          - generic [ref=f2e70]:
+            - button "Ativar tema escuro" [pressed] [ref=f2e71] [cursor=pointer]
+            - button "Bloquear cofre" [ref=f2e74] [cursor=pointer]
+            - button "Sair da conta" [ref=f2e78] [cursor=pointer]
+    - generic [ref=f2e82]:
+      - searchbox "Buscar itens" [ref=f2e88]
+      - generic [ref=f2e90]:
+        - generic [ref=f2e91]:
+          - generic [ref=f2e92]:
+            - heading "Itens" [level=2] [ref=f2e93]
+            - paragraph [ref=f2e94]: 0 no total
+          - button "Novo item" [ref=f2e95] [cursor=pointer]: Novo
+        - listbox "Itens" [ref=f2e97]:
+          - listitem [ref=f2e288]:
+            - paragraph [ref=f2e293]: Nenhum item aqui.
+            - button "Criar primeiro item" [ref=f2e294] [cursor=pointer]
+    - generic [ref=f2e295]:
+      - generic [ref=f2e300]:
+        - heading "Selecione um item" [level=2] [ref=f2e301]
+        - paragraph [ref=f2e302]: Cada item guarda quantas senhas você quiser. Escolha um à esquerda ou crie um novo.
+      - button "Novo item" [ref=f2e303] [cursor=pointer]
+  - status:
+    - paragraph [ref=f2e309]: Item excluído.

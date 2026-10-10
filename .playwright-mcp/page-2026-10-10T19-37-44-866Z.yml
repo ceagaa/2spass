@@ -1,0 +1,75 @@
+- generic [ref=f2e1]:
+  - generic [ref=f2e2]:
+    - generic [ref=f2e32]:
+      - complementary [ref=f2e33]:
+        - generic [ref=f2e40]:
+          - paragraph [ref=f2e41]: Lock
+          - paragraph [ref=f2e42]: Zeró-knowledge
+        - generic [ref=f2e44]:
+          - generic [ref=f2e45]:
+            - generic [ref=f2e46]: Grupos
+            - button "Novo grupo" [ref=f2e48] [cursor=pointer]
+          - navigation "Navegação de grupos" [ref=f2e51]:
+            - button "Todos os itens 1" [ref=f2e52] [cursor=pointer]:
+              - generic [ref=f2e56]: Todos os itens
+              - generic [ref=f2e57]: "1"
+            - button "Sem grupo 1" [ref=f2e58] [cursor=pointer]:
+              - generic [ref=f2e62]: Sem grupo
+              - generic [ref=f2e63]: "1"
+        - generic [ref=f2e64]:
+          - generic [ref=f2e65]: Sincronizado
+          - generic [ref=f2e68]:
+            - generic [ref=f2e69]: teste2@exemplo.com
+            - generic [ref=f2e70]:
+              - button "Ativar tema escuro" [pressed] [ref=f2e71] [cursor=pointer]
+              - button "Bloquear cofre" [ref=f2e74] [cursor=pointer]
+              - button "Sair da conta" [ref=f2e78] [cursor=pointer]
+      - generic [ref=f2e82]:
+        - searchbox "Buscar itens" [ref=f2e88]
+        - generic [ref=f2e90]:
+          - generic [ref=f2e91]:
+            - generic [ref=f2e92]:
+              - heading "Itens" [level=2] [ref=f2e93]
+              - paragraph [ref=f2e94]: 1 no total
+            - button "Novo item" [ref=f2e95] [cursor=pointer]: Novo
+          - listbox "Itens" [ref=f2e97]:
+            - option [selected] [ref=f2e250]:
+              - button [ref=f2e251] [cursor=pointer]:
+                - generic [ref=f2e104]:
+                  - paragraph [ref=f2e105]: Supabase Produção
+                  - paragraph [ref=f2e106]: 0 senhas
+                - button "Favoritar" [ref=f2e107]
+      - generic [ref=f2e132]:
+        - banner [ref=f2e133]:
+          - generic [ref=f2e134]: S
+          - generic [ref=f2e135]:
+            - heading "Supabase Produção" [level=1] [ref=f2e136]
+            - generic [ref=f2e137]:
+              - generic [ref=f2e138]: Sem grupo
+              - generic [ref=f2e141]: 0 senhas
+          - generic [ref=f2e142]:
+            - button "Favoritar" [ref=f2e143] [cursor=pointer]
+            - button "Editar item" [ref=f2e146] [cursor=pointer]
+            - button "Excluir item" [ref=f2e150] [cursor=pointer]
+        - generic [ref=f2e155]:
+          - paragraph [ref=f2e254]: Nenhuma senha neste item ainda.Adicione quantas quiser.
+          - button "Adicionar senha" [ref=f2e255] [cursor=pointer]
+    - status
+  - dialog "Excluir item" [active] [ref=f2e263]:
+    - banner [ref=f2e264]:
+      - heading "Excluir item" [level=2] [ref=f2e266]
+      - button "Fechar" [ref=f2e267] [cursor=pointer]
+    - generic [ref=f2e271]:
+      - paragraph [ref=f2e272]: “Supabase Produção” e todas as suas 0 senha(s) serão removidas permanentemente.
+      - generic [ref=f2e273]:
+        - paragraph [ref=f2e277]: Esta ação é permanente e não pode ser desfeita.
+        - generic [ref=f2e278]: Digite o nome do item
+        - textbox "Digite o nome do item" [ref=f2e279]:
+          - /placeholder: Supabase Produção
+        - paragraph [ref=f2e280]:
+          - text: Digite
+          - strong [ref=f2e281]: Supabase Produção
+          - text: para liberar a exclusão.
+    - contentinfo [ref=f2e282]:
+      - button "Cancelar" [ref=f2e283] [cursor=pointer]
+      - button "Excluir item" [disabled] [ref=f2e284]

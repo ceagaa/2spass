@@ -1,0 +1,57 @@
+- generic [ref=f1e2]:
+  - generic [ref=f1e83]:
+    - complementary [ref=f1e84]:
+      - generic [ref=f1e91]:
+        - paragraph [ref=f1e92]: Lock
+        - paragraph [ref=f1e93]: Zeró-knowledge
+      - generic [ref=f1e95]:
+        - generic [ref=f1e96]:
+          - generic [ref=f1e97]: Grupos
+          - button "Novo grupo" [ref=f1e99] [cursor=pointer]
+        - navigation "Navegação de grupos" [ref=f1e102]:
+          - button "Todos os itens 1" [ref=f1e186] [cursor=pointer]:
+            - generic [ref=f1e107]: Todos os itens
+            - generic [ref=f1e108]: "1"
+          - button "Sem grupo 1" [ref=f1e187] [cursor=pointer]:
+            - generic [ref=f1e191]: Sem grupo
+            - generic [ref=f1e192]: "1"
+      - generic [ref=f1e109]:
+        - generic [ref=f1e110]: Sincronizado
+        - generic [ref=f1e113]:
+          - generic [ref=f1e114]: teste2@exemplo.com
+          - generic [ref=f1e115]:
+            - button "Ativar tema escuro" [pressed] [ref=f1e116] [cursor=pointer]
+            - button "Bloquear cofre" [ref=f1e119] [cursor=pointer]
+            - button "Sair da conta" [ref=f1e123] [cursor=pointer]
+    - generic [ref=f1e127]:
+      - searchbox "Buscar itens" [ref=f1e133]
+      - generic [ref=f1e135]:
+        - generic [ref=f1e136]:
+          - generic [ref=f1e137]:
+            - heading "Itens" [level=2] [ref=f1e138]
+            - paragraph [ref=f1e139]: 1 no total
+          - button "Novo item" [ref=f1e140] [cursor=pointer]: Novo
+        - listbox "Itens" [ref=f1e142]:
+          - option [selected] [ref=f1e195]:
+            - button [ref=f1e196] [cursor=pointer]:
+              - generic [ref=f1e201]:
+                - paragraph [ref=f1e202]: Supabase Produção
+                - paragraph [ref=f1e203]: 0 senhas
+              - button "Favoritar" [ref=f1e204]
+    - generic [ref=f1e208]:
+      - banner [ref=f1e209]:
+        - generic [ref=f1e210]: S
+        - generic [ref=f1e211]:
+          - heading "Supabase Produção" [level=1] [ref=f1e212]
+          - generic [ref=f1e213]:
+            - generic [ref=f1e214]: Sem grupo
+            - generic [ref=f1e217]: 0 senhas
+        - generic [ref=f1e218]:
+          - button "Favoritar" [ref=f1e219] [cursor=pointer]
+          - button "Editar item" [ref=f1e222] [cursor=pointer]
+          - button "Excluir item" [ref=f1e226] [cursor=pointer]
+      - generic [ref=f1e231]:
+        - paragraph [ref=f1e234]: Nenhuma senha neste item ainda.Adicione quantas quiser.
+        - button "Adicionar senha" [ref=f1e235] [cursor=pointer]
+  - status:
+    - paragraph [ref=f1e241]: Item criado.

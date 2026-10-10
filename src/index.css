@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* ---------------------------------------------------------------
+     Design tokens — DARK (padrão)
+     --------------------------------------------------------------- */
+  :root {
+    color-scheme: dark;
+
+    --base: #0e0f11;
+    --surface: #1a1b1e;
+    --elevated: #1e1e1e;
+
+    --ink: #ffffff;
+    --ink-secondary: rgba(255, 255, 255, 0.8);
+    --ink-tertiary: rgba(255, 255, 255, 0.6);
+    --line: rgba(255, 255, 255, 0.08);
+
+    /* channel triplet so Tailwind opacity modifiers (bg-hover/5) work */
+    --c-hover: 255 255 255;
+
+    --success: #34d399;
+    --success-soft: rgba(16, 185, 129, 0.12);
+    --warning: #fbbf24;
+    --warning-soft: rgba(245, 158, 11, 0.12);
+    --danger: #fca5a5;
+    --danger-strong: #f87171;
+    --danger-soft: rgba(239, 68, 68, 0.12);
+    --danger-soft-strong: rgba(239, 68, 68, 0.22);
+    --danger-line: rgba(239, 68, 68, 0.3);
+    --danger-solid: #ef4444;
+
+    --scroll-thumb: rgba(255, 255, 255, 0.1);
+    --scroll-thumb-hover: rgba(255, 255, 255, 0.18);
+  }
+
+  /* ---------------------------------------------------------------
+     Design tokens — LIGHT
+     --------------------------------------------------------------- */
+  html.light {
+    color-scheme: light;
+
+    --base: #f5f6f8;
+    --surface: #ffffff;
+    --elevated: #ffffff;
+
+    --ink: #0e0f11;
+    --ink-secondary: rgba(14, 15, 17, 0.72);
+    --ink-tertiary: rgba(14, 15, 17, 0.55);
+    --line: rgba(14, 15, 17, 0.1);
+
+    --c-hover: 15 15 17;
+
+    --success: #047857;
+    --success-soft: rgba(5, 150, 105, 0.12);
+    --warning: #b45309;
+    --warning-soft: rgba(217, 119, 6, 0.14);
+    --danger: #b91c1c;
+    --danger-strong: #dc2626;
+    --danger-soft: rgba(220, 38, 38, 0.1);
+    --danger-soft-strong: rgba(220, 38, 38, 0.18);
+    --danger-line: rgba(220, 38, 38, 0.3);
+    --danger-solid: #dc2626;
+
+    --scroll-thumb: rgba(0, 0, 0, 0.18);
+    --scroll-thumb-hover: rgba(0, 0, 0, 0.3);
+  }
+
+  * {
+    @apply border-line;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-base text-ink font-sans antialiased;
+    background-image: radial-gradient(
+        1200px 600px at 100% -10%,
+        rgba(255, 65, 3, 0.08),
+        transparent 60%
+      ),
+      radial-gradient(900px 500px at -10% 110%, rgba(255, 65, 3, 0.05), transparent 55%);
+    background-attachment: fixed;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+
+  ::selection {
+    background: rgba(255, 65, 3, 0.35);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid #ff4103;
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  /* Scrollbars */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--scroll-thumb);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--scroll-thumb-hover);
+    background-clip: content-box;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-lg border border-line bg-surface;
+  }
+
+  .input-base {
+    @apply w-full rounded-md border border-line bg-elevated px-3 py-2.5 text-sm text-ink
+      placeholder:text-ink-tertiary transition
+      focus:border-brand/60 focus:outline-none focus:ring-2 focus:ring-brand/25;
+  }
+
+  .label-base {
+    @apply mb-1.5 block text-xs font-medium uppercase tracking-wide text-ink-tertiary;
+  }
+}
