@@ -31,5 +31,8 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# test artifacts (playwright snapshots/console)
+.playwright-mcp/
+
 # misc
 *.tsbuildinfo
