@@ -10,7 +10,7 @@ import {
 
 export type Theme = 'light' | 'dark'
 
-const STORAGE_KEY = 'lock.theme'
+const STORAGE_KEY = '2spass.theme'
 
 interface ThemeContextValue {
   theme: Theme

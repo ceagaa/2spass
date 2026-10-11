@@ -1,4 +1,4 @@
-# Lock — Cofre de Senhas Zero-Knowledge (PWA)
+# 2sPass — Cofre de Senhas Zero-Knowledge (PWA)
 
 Gerenciador de senhas estilo KeePass, com **criptografia ponta-a-ponta (E2EE)** feita
 100% no navegador. O servidor (Supabase) armazena **apenas ciphertext** — nunca a
@@ -11,7 +11,7 @@ senha mestra, chaves ou dados em texto plano.
 ## 1. Arquitetura de arquivos
 
 ```
-lock/
+2spass/
 ├── index.html                     # shell + fontes + meta PWA
 ├── vite.config.ts                 # React + Vite PWA (manifest + service worker)
 ├── tailwind.config.js             # design system (tokens de cor, Inter, raios)
@@ -157,7 +157,7 @@ auto-lock, lock/unlock, PWA — então serve para validar tudo antes de plugar o
 - Para forçar o modo local mesmo com o Supabase configurado: `VITE_LOCAL_MODE=1`.
 - Os dados de teste **não migram** depois; ao configurar o Supabase você começa com um
   cofre novo (a arquitetura zero-knowledge não permite transpor chaves entre contas).
-- Limpar: DevTools → Application → IndexedDB → apague `lock-local` e `lock-vault`
+- Limpar: DevTools → Application → IndexedDB → apague `2spass-local` e `2spass-vault`
   (e o `sessionStorage` para encerrar a sessão).
 
 ---

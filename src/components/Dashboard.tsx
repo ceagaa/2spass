@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import {
   Cloud,
   CloudOff,
+  Download,
   Loader2,
   Lock,
   LogOut,
@@ -9,6 +10,7 @@ import {
   Plus,
   RefreshCw,
   Search,
+  Share2,
   ShieldCheck,
   X,
 } from 'lucide-react'
@@ -25,6 +27,7 @@ import { ItemFormModal } from './ItemFormModal'
 import { CredentialFormModal } from './CredentialFormModal'
 import { GroupModal } from './GroupModal'
 import { ConfirmDialog } from './ConfirmDialog'
+import { useInstallPrompt } from '../hooks/useInstallPrompt'
 
 type GroupModalState =
   | { mode: 'create'; parentId: string | null }
@@ -56,6 +59,7 @@ export function Dashboard() {
     syncNow,
   } = useVault()
   const { toast } = useToast()
+  const { canInstall, showIOSHint, install } = useInstallPrompt()
 
   const [scope, setScope] = useState<string | null>(null)
   const [query, setQuery] = useState('')
@@ -188,7 +192,7 @@ export function Dashboard() {
     <div className="flex h-full overflow-hidden">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-72 flex-col border-r border-line bg-surface transition-transform duration-200 lg:static lg:translate-x-0 ${
+        className={`pt-safe pb-safe fixed inset-y-0 left-0 z-40 flex w-72 flex-col border-r border-line bg-surface transition-transform duration-200 lg:static lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -196,7 +200,7 @@ export function Dashboard() {
           <div className="flex items-center gap-2.5">
             <Logo size="sm" />
             <div>
-              <p className="text-sm font-semibold leading-none text-ink">Lock</p>
+              <p className="text-sm font-semibold leading-none text-ink">2sPass</p>
               <p className="mt-0.5 text-[11px] text-ink-tertiary">Zeró-knowledge</p>
             </div>
           </div>
@@ -227,6 +231,26 @@ export function Dashboard() {
         </div>
 
         <div className="space-y-1 border-t border-line p-3">
+          {canInstall && (
+            <button
+              type="button"
+              onClick={() => void install()}
+              className="flex w-full items-center gap-2 rounded-md bg-brand/10 px-2.5 py-1.5 text-xs font-medium text-brand transition hover:bg-brand/15"
+            >
+              <Download size={14} /> Instalar aplicativo
+            </button>
+          )}
+          {showIOSHint && (
+            <button
+              type="button"
+              onClick={() =>
+                toast('No Safari, toque em Compartilhar → "Adicionar à Tela de Início".', 'info')
+              }
+              className="flex w-full items-center gap-2 rounded-md bg-brand/10 px-2.5 py-1.5 text-xs font-medium text-brand transition hover:bg-brand/15"
+            >
+              <Share2 size={14} /> Instalar no iPhone/iPad
+            </button>
+          )}
           <SyncBadge syncState={syncState} isOnline={isOnline} onSync={syncNow} />
           <div className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5">
             <span className="truncate text-xs text-ink-tertiary">{user?.email}</span>
@@ -265,7 +289,7 @@ export function Dashboard() {
 
       {/* List column */}
       <div
-        className={`flex min-w-0 flex-1 flex-col lg:w-[360px] lg:flex-none ${
+        className={`pt-safe pb-safe flex min-w-0 flex-1 flex-col lg:w-[360px] lg:flex-none ${
           selectedItem ? 'hidden lg:flex' : 'flex'
         }`}
       >
@@ -304,7 +328,9 @@ export function Dashboard() {
       </div>
 
       {/* Detail column */}
-      <div className={`min-w-0 flex-1 ${selectedItem ? 'flex' : 'hidden lg:flex'}`}>
+      <div
+        className={`pt-safe pb-safe min-w-0 flex-1 ${selectedItem ? 'flex' : 'hidden lg:flex'}`}
+      >
         {selectedItem ? (
           <div className="w-full">
             <ItemDetail

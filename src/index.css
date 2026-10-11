@@ -78,6 +78,21 @@
     height: 100%;
   }
 
+  html {
+    /* Comportamento de app: sem bounce da página nem pull-to-refresh. */
+    overscroll-behavior: none;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button,
+  a {
+    touch-action: manipulation;
+  }
+
   body {
     @apply bg-base text-ink font-sans antialiased;
     background-image: radial-gradient(
@@ -136,5 +151,31 @@
 
   .label-base {
     @apply mb-1.5 block text-xs font-medium uppercase tracking-wide text-ink-tertiary;
+  }
+}
+
+@layer utilities {
+  /* Safe areas (notch / home indicator) em modo standalone com viewport-fit=cover. */
+  .pt-safe {
+    padding-top: 0px;
+    padding-top: env(safe-area-inset-top);
+  }
+  .pb-safe {
+    padding-bottom: 0px;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .top-safe {
+    top: 1rem;
+    top: calc(1rem + env(safe-area-inset-top));
+  }
+  .bottom-safe {
+    bottom: 1rem;
+    bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
+  .screen-safe {
+    padding-top: 1rem;
+    padding-top: calc(1rem + env(safe-area-inset-top));
+    padding-bottom: 1rem;
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
   }
 }

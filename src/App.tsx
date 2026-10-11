@@ -3,6 +3,7 @@ import { VaultProvider, useVault } from './context/VaultContext'
 import { ToastProvider } from './context/ToastContext'
 import { ThemeProvider } from './context/ThemeContext'
 import { Toaster } from './components/Toaster'
+import { PwaUpdater } from './components/PwaUpdater'
 import { AuthScreen } from './components/AuthScreen'
 import { UnlockScreen } from './components/UnlockScreen'
 import { Dashboard } from './components/Dashboard'
@@ -42,7 +43,7 @@ function Shell() {
  */
 function LocalModeBanner() {
   return (
-    <div className="pointer-events-none fixed bottom-4 left-1/2 z-40 -translate-x-1/2">
+    <div className="bottom-safe pointer-events-none fixed left-1/2 z-40 -translate-x-1/2">
       <div className="flex items-center gap-2 rounded-full border border-line bg-elevated/95 px-3 py-1.5 text-xs text-ink-secondary shadow-lg backdrop-blur">
         <Database size={13} className="text-brand" />
         <span>
@@ -65,6 +66,7 @@ export default function App() {
         <VaultProvider>
           <Shell />
           <Toaster />
+          <PwaUpdater />
         </VaultProvider>
       </ToastProvider>
     </ThemeProvider>

@@ -34,8 +34,8 @@ export function UnlockScreen() {
   }
 
   return (
-    <div className="relative flex min-h-full items-center justify-center p-4">
-      <div className="absolute right-4 top-4">
+    <div className="screen-safe relative flex min-h-full items-center justify-center px-4">
+      <div className="top-safe absolute right-4">
         <ThemeToggle />
       </div>
       <div className="w-full max-w-sm animate-fade-in">

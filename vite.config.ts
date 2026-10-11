@@ -6,16 +6,19 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['favicon.svg', 'icon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Lock — Cofre de Senhas Zero-Knowledge',
-        short_name: 'Lock',
+        id: '/',
+        name: '2sPass — Cofre de Senhas Zero-Knowledge',
+        short_name: '2sPass',
         description:
           'Gerenciador de senhas com criptografia ponta-a-ponta (E2EE) no navegador. O servidor nunca vê seus dados.',
         theme_color: '#0E0F11',
         background_color: '#0E0F11',
         display: 'standalone',
+        display_override: ['standalone', 'minimal-ui'],
+        handle_links: 'auto',
         orientation: 'portrait-primary',
         scope: '/',
         start_url: '/',
@@ -63,7 +66,7 @@ export default defineConfig({
           },
         ],
       },
-      devOptions: { enabled: false },
+      devOptions: { enabled: true },
     }),
   ],
   server: {

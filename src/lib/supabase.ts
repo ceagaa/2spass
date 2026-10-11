@@ -8,7 +8,7 @@ export const isSupabaseConfigured = Boolean(url && anonKey)
 if (!isSupabaseConfigured) {
   // eslint-disable-next-line no-console
   console.info(
-    '[lock] Supabase não configurado — rodando em MODO LOCAL (dados apenas neste navegador). ' +
+    '[2spass] Supabase não configurado — rodando em MODO LOCAL (dados apenas neste navegador). ' +
       'Para usar o backend de produção, crie .env.local a partir de .env.example.',
   )
 }
@@ -26,10 +26,10 @@ export const supabase = createClient(url ?? 'http://localhost', anonKey ?? 'publ
     autoRefreshToken: true,
     detectSessionInUrl: false,
     storage: typeof window !== 'undefined' ? window.sessionStorage : undefined,
-    storageKey: 'lock.auth.session',
+    storageKey: '2spass.auth.session',
     flowType: 'pkce',
   },
   global: {
-    headers: { 'x-application-name': 'lock-pwa' },
+    headers: { 'x-application-name': '2spass-pwa' },
   },
 })

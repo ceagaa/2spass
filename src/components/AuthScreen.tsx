@@ -57,14 +57,14 @@ export function AuthScreen() {
   }
 
   return (
-    <div className="relative flex min-h-full items-center justify-center p-4">
-      <div className="absolute right-4 top-4">
+    <div className="screen-safe relative flex min-h-full items-center justify-center px-4">
+      <div className="top-safe absolute right-4">
         <ThemeToggle />
       </div>
       <div className="w-full max-w-md animate-fade-in">
         <div className="mb-8 flex flex-col items-center text-center">
           <Logo size="lg" />
-          <h1 className="mt-4 text-2xl font-bold tracking-tight text-ink">Lock</h1>
+          <h1 className="mt-4 text-2xl font-bold tracking-tight text-ink">2sPass</h1>
           <p className="mt-1 text-sm text-ink-secondary">
             Cofre de senhas <span className="text-brand">zero-knowledge</span>
           </p>

@@ -8,18 +8,18 @@ import type { CachedVault } from './types'
  * never the master key, the derived encryption key, or any plaintext entry.
  */
 
-interface LockDB extends DBSchema {
+interface VaultDB extends DBSchema {
   vaults: {
     key: string
     value: CachedVault
   }
 }
 
-let dbPromise: Promise<IDBPDatabase<LockDB>> | null = null
+let dbPromise: Promise<IDBPDatabase<VaultDB>> | null = null
 
 function db() {
   if (!dbPromise) {
-    dbPromise = openDB<LockDB>('lock-vault', 1, {
+    dbPromise = openDB<VaultDB>('2spass-vault', 1, {
       upgrade(database) {
         if (!database.objectStoreNames.contains('vaults')) {
           database.createObjectStore('vaults', { keyPath: 'userId' })

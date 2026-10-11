@@ -26,8 +26,8 @@ interface LocalDB extends DBSchema {
   vaults: { key: string; value: VaultRow }
 }
 
-const DB_NAME = 'lock-local'
-const SESSION_KEY = 'lock.local.session'
+const DB_NAME = '2spass-local'
+const SESSION_KEY = '2spass.local.session'
 
 let dbPromise: Promise<IDBPDatabase<LocalDB>> | null = null
 
