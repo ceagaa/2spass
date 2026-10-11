@@ -6,6 +6,7 @@ node_modules
 # build
 dist
 dist-ssr
+dev-dist
 *.local
 
 # env / secrets
