@@ -96,6 +96,9 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   const vaultRef = useRef<VaultData | null>(null)
   // Serialises writes so an older snapshot can never overwrite a newer one.
   const saveChainRef = useRef<Promise<void>>(Promise.resolve())
+  // True while sign-in/sign-up runs: the Supabase auth event must not flip the
+  // UI to the unlock screen before the vault has actually been opened.
+  const authPendingRef = useRef(false)
 
   const tree = useMemo(
     () => (vault ? buildTree(vault.groups, vault.items) : []),
@@ -131,7 +134,9 @@ export function VaultProvider({ children }: { children: ReactNode }) {
         lock()
         setStatus('signed-out')
       } else {
-        setStatus((current) => (current === 'unlocked' ? current : 'locked'))
+        setStatus((current) =>
+          current === 'unlocked' || authPendingRef.current ? current : 'locked',
+        )
       }
     })
 
@@ -310,21 +315,33 @@ export function VaultProvider({ children }: { children: ReactNode }) {
       const authSecret = await deriveAuthSecret(masterKeyBytes)
 
       let newUser: AuthUser | null
+      authPendingRef.current = true
       try {
         newUser = await backend.signUp(normalizedEmail, authSecret)
       } catch (error) {
+        authPendingRef.current = false
         zero(masterKeyBytes)
         throw new Error(translateAuthError(error instanceof Error ? error.message : String(error)))
       }
 
       if (!newUser) {
+        authPendingRef.current = false
         zero(masterKeyBytes)
         return { needsEmailConfirmation: true }
       }
 
-      const row = await ensureVaultRow(newUser.id, normalizedEmail)
-      await activate(newUser, masterKeyBytes, row.salt, row.encrypted_data)
-      return { needsEmailConfirmation: false }
+      try {
+        const row = await ensureVaultRow(newUser.id, normalizedEmail)
+        await activate(newUser, masterKeyBytes, row.salt, row.encrypted_data)
+        return { needsEmailConfirmation: false }
+      } catch (error) {
+        // Conta já criada e sessão ativa: vai para a tela de desbloqueio.
+        zero(masterKeyBytes)
+        setStatus((current) => (current === 'unlocked' ? current : 'locked'))
+        throw error
+      } finally {
+        authPendingRef.current = false
+      }
     },
     [activate],
   )
@@ -336,15 +353,27 @@ export function VaultProvider({ children }: { children: ReactNode }) {
       const authSecret = await deriveAuthSecret(masterKeyBytes)
 
       let signedUser: AuthUser
+      authPendingRef.current = true
       try {
         signedUser = await backend.signIn(normalizedEmail, authSecret)
       } catch (error) {
+        authPendingRef.current = false
         zero(masterKeyBytes)
         throw error instanceof Error
           ? error
           : new Error('E-mail ou senha mestra incorretos.')
       }
-      await loadAndUnlock(signedUser, masterKeyBytes)
+
+      try {
+        await loadAndUnlock(signedUser, masterKeyBytes)
+      } catch (error) {
+        // Sessão já estabelecida: mostra a tela de desbloqueio em vez do login.
+        zero(masterKeyBytes)
+        setStatus((current) => (current === 'unlocked' ? current : 'locked'))
+        throw error instanceof Error ? error : new Error('Falha ao abrir o cofre.')
+      } finally {
+        authPendingRef.current = false
+      }
     },
     [loadAndUnlock],
   )
@@ -361,10 +390,11 @@ export function VaultProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     lock()
-    await backend.signOut()
+    // Sai da UI antes da ida ao servidor: evita o flash da tela de desbloqueio.
     setUser(null)
     userIdRef.current = null
     setStatus('signed-out')
+    await backend.signOut()
   }, [lock])
 
   /* ---------------- mutations ---------------- */
