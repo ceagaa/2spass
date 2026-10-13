@@ -99,12 +99,12 @@ export function AuthScreen() {
   }
 
   return (
-    <div className="screen-safe relative min-h-full">
+    <div className="screen-safe relative flex min-h-full items-center justify-center">
       <div className="top-safe absolute right-4 z-10">
         <ThemeToggle />
       </div>
 
-      <div className="mx-auto grid min-h-full w-full max-w-5xl grid-cols-1 items-center gap-10 px-4 py-10 lg:grid-cols-2 lg:gap-16 lg:py-14">
+      <div className="grid w-full max-w-5xl grid-cols-1 items-center gap-10 px-4 py-10 lg:grid-cols-2 lg:gap-16">
         {/* CTA + explicação (primeiro no mobile) */}
         <section className="animate-fade-in">
           <div className="flex items-center gap-3">
