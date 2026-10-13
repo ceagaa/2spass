@@ -5,6 +5,8 @@ Gerenciador de senhas estilo KeePass, com **criptografia ponta-a-ponta (E2EE)** 
 senha mestra, chaves ou dados em texto plano.
 
 > Stack: **React 18 + Vite + TypeScript + Tailwind CSS + Supabase + Web Crypto API + PWA**
+>
+> Produção: **https://2spass.2swebtech.com.br** (Cloudflare Workers + Supabase)
 
 ---
 
@@ -15,16 +17,20 @@ senha mestra, chaves ou dados em texto plano.
 ├── index.html                     # shell + fontes + meta PWA
 ├── vite.config.ts                 # React + Vite PWA (manifest + service worker)
 ├── tailwind.config.js             # design system (tokens de cor, Inter, raios)
+├── postcss.config.js              # Tailwind + autoprefixer
+├── wrangler.jsonc                 # Cloudflare Workers: serve dist/ como SPA
+├── .env.example                   # VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY
 ├── supabase/
 │   └── schema.sql                 # tabelas + RLS + trigger  (rodar no Supabase)
 ├── scripts/gen-icons.mjs          # gerador dos ícones PNG do PWA (só Node nativo)
 ├── public/
 │   ├── icon-192.png / icon-512.png / apple-touch-icon.png
-│   ├── icon.svg / favicon.svg
+│   ├── icon.svg / favicon.svg     # cadeado laranja — também é o logotipo do app
+│   └── _headers                   # cache immutable de /assets/*
 └── src/
     ├── main.tsx                   # bootstrap React + registerSW()
     ├── App.tsx                    # providers + roteamento por estado do cofre
-    ├── index.css                  # Tailwind + base styles + scrollbars
+    ├── index.css                  # Tailwind + tokens + base styles + scrollbars
     ├── lib/
     │   ├── crypto.ts              # ⭐ Argon2id, HKDF, AES-256-GCM, gerador de senha
     │   ├── supabase.ts            # client (sessão volátil em sessionStorage)
@@ -36,26 +42,30 @@ senha mestra, chaves ou dados em texto plano.
     │   ├── vault.ts               # operações puras do cofre + persistência
     │   ├── storage.ts             # cache offline (IndexedDB) — só ciphertext
     │   ├── clipboard.ts           # copiar com auto-limpeza em 30s
+    │   ├── download.ts            # baixar arquivo .txt (senha mestra no cadastro)
     │   └── types.ts               # VaultData / VaultGroup / VaultItem / VaultCredential + migração
     ├── context/
     │   ├── VaultContext.tsx       # ⭐ estado do cofre, derivação de chave, sync, auto-lock
     │   ├── ToastContext.tsx       # feedback global (copiado, erros…)
     │   └── ThemeContext.tsx       # tema claro/escuro (persistido em localStorage)
     ├── hooks/
-    │   └── useAutoLock.ts         # bloqueio por inatividade (robusto a throttling)
+    │   ├── useAutoLock.ts         # bloqueio por inatividade (robusto a throttling)
+    │   └── useInstallPrompt.ts    # “Instalar aplicativo” + dica do iPhone/iPad
     └── components/
-        ├── AuthScreen.tsx         # Login / Criar cofre (email + senha mestra)
-        ├── UnlockScreen.tsx       # Desbloquear cofre (sessão existente)
+        ├── AuthScreen.tsx         # login/cadastro em 2 colunas + baixar senha mestra
+        ├── UnlockScreen.tsx       # desbloquear cofre (sessão existente)
         ├── Dashboard.tsx          # layout de 3 colunas + orquestração
-        ├── GroupTree.tsx          # árvore recursiva de grupos/subgrupos
+        ├── GroupTree.tsx          # árvore recursiva de grupos/subgrupos (ações no ⋮)
         ├── ItemList.tsx           # lista de itens (busca, favoritos)
-        ├── ItemDetail.tsx         # item + lista de senhas + “Adicionar outra senha”
+        ├── ItemDetail.tsx         # item + lista de senhas (ações do item no ⋮)
+        ├── ContextMenu.tsx        # menu “⋮” acessível (itens e grupos)
         ├── CredentialRow.tsx      # linha da lista (só o identificador; clique abre)
         ├── CredentialDetailModal.tsx # detalhes organizados (usuário/senha/url/notas)
         ├── ItemFormModal.tsx      # criar/editar item (nome + grupo)
         ├── CredentialFormModal.tsx# criar/editar senha (identificador obrigatório)
-        ├── PasswordInput.tsx      # campo de senha + gerador + medidor de força
+        ├── PasswordInput.tsx      # campo de senha + gerador
         ├── CopyButton.tsx         # copiar com contagem regressiva
+        ├── PwaUpdater.tsx         # atualização automática do PWA (recarrega sozinho)
         ├── GroupModal.tsx / ConfirmDialog.tsx # exclusão com confirmação dupla (digitar o nome)
         ├── Toaster.tsx / Logo.tsx / ThemeToggle.tsx
         └── ui/                    # Button.tsx, Input.tsx, Modal.tsx
@@ -86,7 +96,7 @@ Pontos-chave:
 | Criptografia local | **AES-256-GCM** com IV aleatório de 12 B por gravação (tag de autenticação detecta tamper) |
 | Chave só em memória | `CryptoKey` não-extraível em `useRef`; `masterKeyBytes` é zerado (`fill(0)`) após o uso |
 | Sessão volátil | JWT do Supabase em `sessionStorage` (some ao fechar a aba); **nada** de chave em `localStorage` |
-| Auto-lock | 5 min de inatividade → limpa chave + cofre da memória (`useAutoLock`) |
+| Auto-lock | 15 min de inatividade → limpa chave + cofre da memória (`useAutoLock`) |
 | Clipboard | Limpo automaticamente após **30 s** (só se ainda contiver o valor copiado) |
 | Confidencialidade no repouso | Supabase/RLS guardam apenas o blob `v1.<iv>.<ciphertext>` |
 
@@ -141,9 +151,13 @@ npm install
 npm run dev        # http://localhost:5173
 npm run build      # typecheck + build + service worker (dist/)
 npm run preview    # serve o build de produção
+npm run typecheck  # só o tsc --noEmit
 ```
 
-Instalação PWA: abra o build no Chrome/Edge → ícone “Instalar” na barra de endereço.
+Copie `.env.example` para `.env.local` e preencha as variáveis do Supabase.
+
+Instalação PWA: abra o build no Chrome/Edge → ícone “Instalar” na barra de endereço
+(no iPhone/iPad, o app oferece a dica “Compartilhar → Adicionar à Tela de Início”).
 
 ### 4.1 Testar sem Supabase (modo local)
 
@@ -160,6 +174,20 @@ auto-lock, lock/unlock, PWA — então serve para validar tudo antes de plugar o
 - Limpar: DevTools → Application → IndexedDB → apague `2spass-local` e `2spass-vault`
   (e o `sessionStorage` para encerrar a sessão).
 
+### 4.2 Deploy (Cloudflare Workers)
+
+O repositório já vem com `wrangler.jsonc` (serve `dist/` com fallback de SPA) e
+`public/_headers` (cache immutable para `/assets/*`).
+
+1. **Variáveis de ambiente no build** — o Vite embute os valores no bundle, então elas
+   precisam existir quando `npm run build` roda (ex.: Cloudflare Workers Builds →
+   Settings → Variables): `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`.
+2. Build: `npm run build`
+3. Deploy: `npx wrangler deploy` (ou configure o Workers Builds para rodar build + deploy)
+
+> Sem as variáveis no build, o app sobe em **Modo local** (dados só no navegador) —
+> não é um erro de código, é o backend que ficou de fora do bundle.
+
 ---
 
 ## 5. Funcionalidades
@@ -169,25 +197,35 @@ auto-lock, lock/unlock, PWA — então serve para validar tudo antes de plugar o
 - Senhas listadas pelo **identificador (obrigatório)**; **um clique** abre um modal com os
   detalhes organizados — usuário, senha, URL e notas.
 - Grupos e **subgrupos** aninhados (árvore recursiva, contador de itens por nó).
+- Ações organizadas em **menu “⋮”** (`ContextMenu.tsx`): no item (Editar / Excluir) e no grupo
+  (Novo subgrupo / Renomear / Excluir) — menu acessível (`role="menu"`, setas, Escape).
 - Cada credencial tem **identificador, usuário/e-mail, senha, URL e notas** (tudo cifrado),
   com **visualizar/ocultar**, **copiar** (auto-limpeza 30 s) e **gerador** criptográfico.
 - Busca por item/usuário/URL, favoritos por item, exclusão avulsa de senhas e cascata de grupos.
   Toda exclusão (senha, item ou grupo) exige **confirmação dupla**: é preciso digitar o nome exato
   do que será removido para liberar o botão.
+- **Tela de acesso em 2 colunas** (desktop): explicação do app à esquerda, formulário de
+  login/cadastro à direita; no mobile os blocos empilham, com a apresentação primeiro.
+- **Download da senha mestra** (`.txt`) durante o cadastro, habilitado quando a senha está
+  confirmada — backup para guardar em local seguro.
+- **Bloqueio automático após 15 minutos** de inatividade (+ botão “Bloquear cofre”).
+- **PWA com atualização automática**: o service worker se atualiza sozinho e recarrega o app;
+  o cofre cifrado fica no IndexedDB e é sincronizado com o Supabase ao reconectar
+  (fila serializada, sem sobrescrita fora de ordem). Botão “Instalar aplicativo” no menu lateral.
 - **Migração automática**: cofres do formato antigo (senha única) viram um item com uma
   credencial — sem perda de dados.
 - **Tema claro/escuro** com alternância na barra lateral e nas telas de acesso; preferência
   persistida em `localStorage` e aplicada antes da primeira pintura (sem flash). Todo o
   design system é dirigido por variáveis CSS (tokens em `src/index.css` + `tailwind.config.js`).
-- **PWA offline**: service worker cacheia o app shell; o cofre cifrado fica no IndexedDB
-  e é sincronizado com o Supabase ao reconectar (fila serializada, sem sobrescrita fora de ordem).
-- Status de sincronização visível (sincronizado / offline / erro).
+- **Status de sincronização visível** (sincronizando / sincronizado / offline / erro).
 
 ---
 
 ## 6. Cabeçalhos de segurança recomendados (produção)
 
-Sirva via HTTPS e adicione, no host (ex.: `vercel.json`, Nginx ou Cloudflare):
+Sirva via HTTPS. O repositório já inclui `public/_headers` com o cache de `/assets/*`;
+acrescente as regras abaixo no mesmo arquivo (Workers Assets os aplica) ou no host
+(ex.: Nginx, Cloudflare):
 
 ```
 Content-Security-Policy:
