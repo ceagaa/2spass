@@ -3,7 +3,7 @@ import { argon2id } from 'hash-wasm'
 /**
  * client-side cryptography.
  *
- * Zero-knowledge model (Bitwarden-style, adapted):
+ * Derivation model (Bitwarden-style, adapted):
  *
  *   masterKeyBytes = Argon2id(masterPassword, salt = email.toLowerCase())
  *   authSecret     = HKDF(masterKeyBytes, info="supabase-auth")   -> sent to Supabase as the account password

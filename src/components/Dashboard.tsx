@@ -201,7 +201,6 @@ export function Dashboard() {
             <Logo size="sm" />
             <div>
               <p className="text-sm font-semibold leading-none text-ink">2sPass</p>
-              <p className="mt-0.5 text-[11px] text-ink-tertiary">Zeró-knowledge</p>
             </div>
           </div>
           <button

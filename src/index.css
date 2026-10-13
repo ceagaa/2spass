@@ -95,12 +95,7 @@
 
   body {
     @apply bg-base text-ink font-sans antialiased;
-    background-image: radial-gradient(
-        1200px 600px at 100% -10%,
-        rgba(255, 65, 3, 0.08),
-        transparent 60%
-      ),
-      radial-gradient(900px 500px at -10% 110%, rgba(255, 65, 3, 0.05), transparent 55%);
+    background-image: radial-gradient(900px 500px at -10% 110%, rgba(255, 65, 3, 0.05), transparent 55%);
     background-attachment: fixed;
     transition:
       background-color 0.2s ease,

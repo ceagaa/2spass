@@ -10,7 +10,7 @@ export default defineConfig({
       includeAssets: ['favicon.svg', 'icon.svg', 'apple-touch-icon.png'],
       manifest: {
         id: '/',
-        name: '2sPass — Cofre de Senhas Zero-Knowledge',
+        name: '2sPass | Cofre de senhas',
         short_name: '2sPass',
         description:
           'Gerenciador de senhas com criptografia ponta-a-ponta (E2EE) no navegador. O servidor nunca vê seus dados.',

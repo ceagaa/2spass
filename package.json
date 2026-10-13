@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Zero-knowledge PWA password manager (KeePass-style) — React + Vite + Supabase + Web Crypto",
+  "description": "2sPass | Cofre de senhas — PWA password manager (KeePass-style) — React + Vite + Supabase + Web Crypto",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

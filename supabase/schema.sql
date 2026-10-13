@@ -1,5 +1,5 @@
 -- =============================================================================
---  Lock · Zero-Knowledge Password Manager
+--  2sPass · Cofre de senhas
 --  Supabase schema + Row Level Security
 --  Run this in the Supabase SQL editor (Dashboard → SQL → New query).
 --
@@ -51,7 +51,7 @@ create table if not exists public.vaults (
 );
 
 comment on table public.vaults is
-  'Zero-knowledge vault: ciphertext only. The server can never decrypt it.';
+  'Vaults hold ciphertext only. The server can never decrypt them.';
 comment on column public.vaults.encrypted_data is
   'v1.<iv>.<ciphertext> — AES-256-GCM, produced and consumed only in the browser.';
 
@@ -158,7 +158,7 @@ create trigger vaults_set_updated_at
 revoke execute on function public.vaults_guard_row() from PUBLIC, anon, authenticated;
 
 -- =============================================================================
---  Row Level Security — the core Zero-Knowledge guarantee at the DB layer.
+--  Row Level Security — enforced at the DB layer.
 --  A user can only ever select / insert / update / delete rows they own.
 --
 --  FORCE also subjects the table owner to the policies. That does not break

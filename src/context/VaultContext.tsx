@@ -49,7 +49,7 @@ import { wipeAllScheduled } from '../lib/clipboard'
 export type VaultStatus = 'loading' | 'signed-out' | 'locked' | 'unlocked'
 export type SyncState = 'idle' | 'syncing' | 'saved' | 'offline' | 'error'
 
-export const AUTO_LOCK_MS = 5 * 60 * 1000
+export const AUTO_LOCK_MS = 15 * 60 * 1000
 
 interface VaultContextValue {
   status: VaultStatus

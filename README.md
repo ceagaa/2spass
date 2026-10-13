@@ -1,4 +1,4 @@
-# 2sPass — Cofre de Senhas Zero-Knowledge (PWA)
+# 2sPass | Cofre de senhas (PWA)
 
 Gerenciador de senhas estilo KeePass, com **criptografia ponta-a-ponta (E2EE)** feita
 100% no navegador. O servidor (Supabase) armazena **apenas ciphertext** — nunca a
@@ -63,7 +63,7 @@ senha mestra, chaves ou dados em texto plano.
 
 ---
 
-## 2. Modelo de segurança (Zero-Knowledge)
+## 2. Modelo de segurança
 
 ```
                          (nunca sai do navegador)
@@ -156,7 +156,7 @@ auto-lock, lock/unlock, PWA — então serve para validar tudo antes de plugar o
   continua sendo a falha de decifragem do AES-GCM.
 - Para forçar o modo local mesmo com o Supabase configurado: `VITE_LOCAL_MODE=1`.
 - Os dados de teste **não migram** depois; ao configurar o Supabase você começa com um
-  cofre novo (a arquitetura zero-knowledge não permite transpor chaves entre contas).
+  cofre novo (as chaves são derivadas por conta e não podem ser transpostas entre contas).
 - Limpar: DevTools → Application → IndexedDB → apague `2spass-local` e `2spass-vault`
   (e o `sessionStorage` para encerrar a sessão).
 

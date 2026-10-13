@@ -1,5 +1,14 @@
-import { useState, type FormEvent } from 'react'
-import { AtSign, Eye, EyeOff, KeyRound, Lock, ShieldCheck } from 'lucide-react'
+import { useRef, useState, type FormEvent } from 'react'
+import {
+  AtSign,
+  Cloud,
+  Download,
+  Eye,
+  EyeOff,
+  KeyRound,
+  Lock,
+  WifiOff,
+} from 'lucide-react'
 import { Button } from './ui/Button'
 import { Input } from './ui/Input'
 import { Logo } from './Logo'
@@ -7,8 +16,15 @@ import { ThemeToggle } from './ThemeToggle'
 import { useVault } from '../context/VaultContext'
 import { useToast } from '../context/ToastContext'
 import { estimateStrength } from '../lib/crypto'
+import { downloadTextFile } from '../lib/download'
 
 type Mode = 'signin' | 'signup'
+
+const HIGHLIGHTS = [
+  { icon: <Lock size={15} />, text: 'Suas senhas são criptografadas no seu aparelho antes de qualquer envio.' },
+  { icon: <Cloud size={15} />, text: 'O cofre acompanha você em qualquer dispositivo, com sincronização automática.' },
+  { icon: <WifiOff size={15} />, text: 'Funciona offline e bloqueia sozinho após 15 minutos de inatividade.' },
+]
 
 export function AuthScreen() {
   const { signIn, register } = useVault()
@@ -20,9 +36,17 @@ export function AuthScreen() {
   const [show, setShow] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const emailRef = useRef<HTMLInputElement>(null)
 
   const strength = estimateStrength(password)
   const isSignup = mode === 'signup'
+  const canDownload = isSignup && password.length >= 8 && confirm.length > 0 && password === confirm
+
+  function goTo(next: Mode) {
+    setMode(next)
+    setError(null)
+    requestAnimationFrame(() => emailRef.current?.focus())
+  }
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault()
@@ -56,30 +80,69 @@ export function AuthScreen() {
     }
   }
 
+  function onDownloadMasterPassword() {
+    const stamp = new Date().toISOString().slice(0, 10)
+    downloadTextFile(
+      `2spass-senha-mestra-${stamp}.txt`,
+      [
+        '2sPass — Senha mestra',
+        '',
+        `Conta: ${email.trim()}`,
+        `Senha mestra: ${password}`,
+        `Gerado em: ${new Date().toLocaleString('pt-BR')}`,
+        '',
+        'Guarde este arquivo em um local seguro e não compartilhe com ninguém.',
+        '',
+      ].join('\n'),
+    )
+    toast('Senha mestra baixada. Guarde o arquivo em local seguro.', 'success')
+  }
+
   return (
-    <div className="screen-safe relative flex min-h-full items-center justify-center px-4">
-      <div className="top-safe absolute right-4">
+    <div className="screen-safe relative min-h-full">
+      <div className="top-safe absolute right-4 z-10">
         <ThemeToggle />
       </div>
-      <div className="w-full max-w-md animate-fade-in">
-        <div className="mb-8 flex flex-col items-center text-center">
-          <Logo size="lg" />
-          <h1 className="mt-4 text-2xl font-bold tracking-tight text-ink">2sPass</h1>
-          <p className="mt-1 text-sm text-ink-secondary">
-            Cofre de senhas <span className="text-brand">zero-knowledge</span>
-          </p>
-        </div>
 
-        <div className="card p-6 shadow-2xl">
+      <div className="mx-auto grid min-h-full w-full max-w-5xl grid-cols-1 items-center gap-10 px-4 py-10 lg:grid-cols-2 lg:gap-16 lg:py-14">
+        {/* CTA + explicação (primeiro no mobile) */}
+        <section className="animate-fade-in">
+          <div className="flex items-center gap-3">
+            <Logo size="md" />
+            <div>
+              <h1 className="text-xl font-bold tracking-tight text-ink">2sPass</h1>
+              <p className="text-sm text-ink-secondary">Cofre de senhas</p>
+            </div>
+          </div>
+
+          <h2 className="mt-8 text-3xl font-bold leading-tight tracking-tight text-ink lg:text-4xl">
+            Suas senhas trancadas no seu dispositivo.
+          </h2>
+          <p className="mt-3 max-w-md text-sm leading-relaxed text-ink-secondary lg:text-[16px]">
+            O 2sPass guarda suas senhas em um cofre criptografado dentro do navegador. Você abre
+            ele com a sua senha mestra — e só você tem essa chave.
+          </p>
+
+          <ul className="mt-6 space-y-3">
+            {HIGHLIGHTS.map((highlight) => (
+              <li key={highlight.text} className="flex items-start gap-3 text-sm text-ink-secondary">
+                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-brand/10 text-brand">
+                  {highlight.icon}
+                </span>
+                {highlight.text}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* Formulário */}
+        <section className="card w-full animate-fade-in p-6 shadow-2xl sm:max-w-md lg:mx-0 lg:max-w-none">
           <div className="mb-6 grid grid-cols-2 gap-1 rounded-md border border-line bg-base p-1">
             {(['signin', 'signup'] as Mode[]).map((m) => (
               <button
                 key={m}
                 type="button"
-                onClick={() => {
-                  setMode(m)
-                  setError(null)
-                }}
+                onClick={() => goTo(m)}
                 className={`h-9 rounded-md text-sm font-medium transition ${
                   mode === m ? 'bg-brand text-white' : 'text-ink-secondary hover:text-ink'
                 }`}
@@ -91,6 +154,7 @@ export function AuthScreen() {
 
           <form onSubmit={onSubmit} className="space-y-4">
             <Input
+              ref={emailRef}
               name="email"
               type="email"
               autoComplete="username"
@@ -159,6 +223,17 @@ export function AuthScreen() {
                   onChange={(e) => setConfirm(e.target.value)}
                   required
                 />
+
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  disabled={!canDownload}
+                  onClick={onDownloadMasterPassword}
+                  className="w-full"
+                >
+                  <Download size={14} /> Baixar senha mestra (.txt)
+                </Button>
               </>
             )}
 
@@ -175,16 +250,7 @@ export function AuthScreen() {
               {isSignup ? 'Criar cofre criptografado' : 'Desbloquear cofre'}
             </Button>
           </form>
-
-          <div className="mt-6 flex items-start gap-2.5 rounded-md border border-line bg-base p-3">
-            <ShieldCheck size={16} className="mt-0.5 shrink-0 text-brand" />
-            <p className="text-xs leading-relaxed text-ink-tertiary">
-              Sua senha mestra nunca sai deste dispositivo. A derivação <strong>Argon2id</strong> e a
-              cifragem <strong>AES-256-GCM</strong> acontecem 100% no navegador. Se você esquecê-la,
-              os dados são irrecuperáveis.
-            </p>
-          </div>
-        </div>
+        </section>
       </div>
     </div>
   )

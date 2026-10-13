@@ -2,6 +2,7 @@ import { useMemo, useState, type ReactNode } from 'react'
 import { ChevronRight, Folder, FolderOpen, FolderPlus, Pencil, Trash2 } from 'lucide-react'
 import type { GroupNode } from '../lib/vault'
 import type { VaultGroup } from '../lib/types'
+import { ContextMenu } from './ContextMenu'
 
 interface GroupTreeProps {
   tree: GroupNode[]
@@ -161,34 +162,32 @@ function GroupBranch(props: BranchProps) {
 
         <span className="mr-1 text-[11px] tabular-nums text-ink-tertiary">{node.itemCount}</span>
 
-        <div className="flex items-center opacity-0 transition group-hover/row:opacity-100 focus-within:opacity-100">
-          <button
-            type="button"
-            onClick={() => onCreate(group.id)}
-            aria-label={`Novo subgrupo em ${group.name}`}
-            title="Novo subgrupo"
-            className="rounded-md p-1 text-ink-tertiary transition hover:text-brand"
-          >
-            <FolderPlus size={14} />
-          </button>
-          <button
-            type="button"
-            onClick={() => onRename(group)}
-            aria-label={`Renomear ${group.name}`}
-            title="Renomear"
-            className="rounded-md p-1 text-ink-tertiary transition hover:text-ink"
-          >
-            <Pencil size={14} />
-          </button>
-          <button
-            type="button"
-            onClick={() => onDelete(group)}
-            aria-label={`Excluir ${group.name}`}
-            title="Excluir"
-            className="rounded-md p-1 text-ink-tertiary transition hover:text-danger-strong"
-          >
-            <Trash2 size={14} />
-          </button>
+        <div className="flex items-center transition lg:opacity-0 lg:group-hover/row:opacity-100 lg:focus-within:opacity-100">
+          <ContextMenu
+            label={`Ações de ${group.name}`}
+            triggerClassName="p-1"
+            items={[
+              {
+                key: 'create',
+                label: 'Novo subgrupo',
+                icon: <FolderPlus size={15} />,
+                onSelect: () => onCreate(group.id),
+              },
+              {
+                key: 'rename',
+                label: 'Renomear',
+                icon: <Pencil size={15} />,
+                onSelect: () => onRename(group),
+              },
+              {
+                key: 'delete',
+                label: 'Excluir',
+                icon: <Trash2 size={15} />,
+                danger: true,
+                onSelect: () => onDelete(group),
+              },
+            ]}
+          />
         </div>
       </div>
 

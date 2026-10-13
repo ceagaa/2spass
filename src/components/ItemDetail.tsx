@@ -3,6 +3,7 @@ import { Folder, Info, Pencil, Plus, Star, Trash2 } from 'lucide-react'
 import type { VaultCredential, VaultItem } from '../lib/types'
 import { CredentialRow } from './CredentialRow'
 import { CredentialDetailModal } from './CredentialDetailModal'
+import { ContextMenu } from './ContextMenu'
 
 interface ItemDetailProps {
   item: VaultItem
@@ -60,22 +61,24 @@ export function ItemDetail({
           >
             <Star size={17} fill={item.favorite ? 'currentColor' : 'none'} />
           </button>
-          <button
-            type="button"
-            onClick={onEditItem}
-            aria-label="Editar item"
-            className="rounded-md p-2 text-ink-tertiary transition hover:bg-hover/[0.06] hover:text-ink"
-          >
-            <Pencil size={17} />
-          </button>
-          <button
-            type="button"
-            onClick={onDeleteItem}
-            aria-label="Excluir item"
-            className="rounded-md p-2 text-ink-tertiary transition hover:bg-hover/[0.06] hover:text-danger-strong"
-          >
-            <Trash2 size={17} />
-          </button>
+          <ContextMenu
+            label="Ações do item"
+            items={[
+              {
+                key: 'edit',
+                label: 'Editar item',
+                icon: <Pencil size={15} />,
+                onSelect: onEditItem,
+              },
+              {
+                key: 'delete',
+                label: 'Excluir item',
+                icon: <Trash2 size={15} />,
+                danger: true,
+                onSelect: onDeleteItem,
+              },
+            ]}
+          />
         </div>
       </header>
 
