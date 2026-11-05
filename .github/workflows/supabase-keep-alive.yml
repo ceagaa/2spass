@@ -38,34 +38,39 @@ jobs:
             exit 1
           fi
 
-      - name: Ping na API (REST + Auth + Health)
+      - name: Ping na API (REST + Health)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
-          set -euo pipefail
+          set -uo pipefail
 
-          # 1) REST: força atividade no PostgREST (conta como uso do projeto)
-          code=$(curl -sS -o /tmp/rest.out -w "%{http_code}" \
-            --retry 3 --retry-delay 5 --max-time 30 \
-            -H "apikey: $SUPABASE_ANON_KEY" \
-            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
-            -H "x-application-name: 2spass-keep-alive" \
-            "$SUPABASE_URL/rest/v1/")
-          echo "REST /rest/v1/ -> HTTP $code"
-          if [ "$code" -lt 200 ] || [ "$code" -ge 300 ]; then
-            echo "::error::Ping REST falhou (HTTP $code): $(cat /tmp/rest.out)"
-            exit 1
-          fi
-
-          # 2) Health: confirma que o projeto está de pé e acorda serviços
-          for path in "/auth/v1/health" "/realtime/v1/api/health"; do
-            code=$(curl -sS -o /dev/null -w "%{http_code}" \
+          # Endpoint que registra atividade no projeto e funciona com a anon key.
+          # Obs: /rest/v1/ (raiz) exige secret key — por isso consultamos uma tabela.
+          ping() {
+            local path="$1"
+            local code
+            code=$(curl -sS -o /tmp/ping.out -w "%{http_code}" \
               --retry 3 --retry-delay 5 --max-time 30 \
               -H "apikey: $SUPABASE_ANON_KEY" \
+              -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
               -H "x-application-name: 2spass-keep-alive" \
-              "$SUPABASE_URL$path" || true)
+              "$SUPABASE_URL$path" 2>/dev/null) || code=000
             echo "GET $path -> HTTP $code"
-          done
+            [ "$code" -ge 200 ] && [ "$code" -lt 300 ]
+          }
+
+          # 1) Query real no PostgREST (conta como uso do projeto)
+          ok=0
+          ping "/rest/v1/vaults?select=id&limit=1" && ok=1
+
+          # 2) Endpoints de saúde: acordam Auth/Realtime e confirmam que está de pé
+          ping "/auth/v1/health" && ok=1
+          ping "/realtime/v1/api/health" && ok=1
+
+          if [ "$ok" -ne 1 ]; then
+            echo "::error::Todos os pings falharam — verifique SUPABASE_URL/SUPABASE_ANON_KEY."
+            exit 1
+          fi
 
           echo "Keep-alive OK em $(date -u +%Y-%m-%dT%H:%M:%SZ)"
