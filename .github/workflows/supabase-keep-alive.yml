@@ -1,0 +1,71 @@
+name: Supabase Keep-Alive
+
+# Impede que o projeto Supabase (plano Free) seja pausado por inatividade.
+# O plano Free pausa projetos após ~7 dias sem atividade; aqui disparamos
+# uma requisição real à API do Supabase 2x por semana para registrar activity.
+#
+# Segredos necessários (Settings > Secrets and variables > Actions):
+#   SUPABASE_URL        -> https://xxxx.supabase.co
+#   SUPABASE_ANON_KEY   -> chave pública (anon) do projeto
+
+on:
+  schedule:
+    # Segunda e quinta às 12:00 UTC (nunca passa mais de ~4 dias sem ping)
+    - cron: "0 12 * * 1"
+    - cron: "0 12 * * 4"
+  workflow_dispatch: # permite rodar manualmente para teste
+
+permissions:
+  contents: read
+
+concurrency:
+  group: supabase-keep-alive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    name: Ping Supabase API
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verificar segredos configurados
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "::error::Defina os segredos SUPABASE_URL e SUPABASE_ANON_KEY no repositório."
+            exit 1
+          fi
+
+      - name: Ping na API (REST + Auth + Health)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          set -euo pipefail
+
+          # 1) REST: força atividade no PostgREST (conta como uso do projeto)
+          code=$(curl -sS -o /tmp/rest.out -w "%{http_code}" \
+            --retry 3 --retry-delay 5 --max-time 30 \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            -H "x-application-name: 2spass-keep-alive" \
+            "$SUPABASE_URL/rest/v1/")
+          echo "REST /rest/v1/ -> HTTP $code"
+          if [ "$code" -lt 200 ] || [ "$code" -ge 300 ]; then
+            echo "::error::Ping REST falhou (HTTP $code): $(cat /tmp/rest.out)"
+            exit 1
+          fi
+
+          # 2) Health: confirma que o projeto está de pé e acorda serviços
+          for path in "/auth/v1/health" "/realtime/v1/api/health"; do
+            code=$(curl -sS -o /dev/null -w "%{http_code}" \
+              --retry 3 --retry-delay 5 --max-time 30 \
+              -H "apikey: $SUPABASE_ANON_KEY" \
+              -H "x-application-name: 2spass-keep-alive" \
+              "$SUPABASE_URL$path" || true)
+            echo "GET $path -> HTTP $code"
+          done
+
+          echo "Keep-alive OK em $(date -u +%Y-%m-%dT%H:%M:%SZ)"
